@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Cordas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f1f1;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #D10C0C; /* Vermelho Bombeiro */
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: #D10C0C; /* Vermelho Bombeiro */
+            outline: none;
+        }
+
+        .btn {
+            background-color: #D10C0C; /* Vermelho Bombeiro */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #a20909;
+        }
+
+        .corda-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .corda {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .corda:hover {
+            transform: translateY(-10px);
+        }
+
+        .corda.show {
+            opacity: 1;
+        }
+
+        .livre {
+            background-color: #FFF7E0; /* Amarelo claro */
+            border-left: 4px solid #D10C0C; /* Vermelho Bombeiro */
+        }
+
+        .ocupado {
+            background-color: #F8D7DA; /* Vermelho claro */
+            border-left: 4px solid #F44336;
+        }
+
+        .detalhes {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .status-icon {
+            font-size: 1.3rem;
+            margin-right: 5px;
+        }
+
+        .formulario-adicionar,
+        .formulario-editar {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .formulario-adicionar.active,
+        .formulario-editar.active {
+            display: block;
+        }
+
+        .sucesso {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #D10C0C;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-botoes {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .btn-fechar {
+            background-color: #bbb;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-fechar:hover {
+            background-color: #888;
+        }
+
+        .btn-acao {
+            background-color: #D10C0C;
+            color: white;
+            padding: 5px 15px;  /* Reduzido o padding */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;  /* Fonte reduzida */
+            transition: background-color 0.3s ease;
+            width: 100px; /* Definido largura fixa */
+            margin: 5px 0; /* Adicionado margens */
+        }
+
+        .btn-acao:hover {
+            background-color: #a20909;
+        }
+
+        @media (max-width: 768px) {
+            .corda-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .corda {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .corda {
+                width: 90%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Organizador de Cordas</h1>
+
+        <div>
+            <input type="text" id="pesquisa" placeholder="Pesquise por código ou nome..." oninput="filtrarRecursos()">
+            <select id="filtro-status" onchange="filtrarRecursos()">
+                <option value="">Filtrar por Status</option>
+                <option value="livre">Livre</option>
+                <option value="ocupado">Ocupado</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="mostrarFormularioAdicionar()">Adicionar Recurso</button>
+
+        <!-- Formulário de Adicionar Recurso -->
+        <div class="formulario-adicionar" id="formulario-adicionar">
+            <label for="nome">Nome do Recurso:</label>
+            <input type="text" id="nome-recurso" placeholder="Nome da Corda">
+            <label for="comprimento">Comprimento (m):</label>
+            <input type="number" id="comprimento-recurso" placeholder="Comprimento">
+            <label for="codigo">Código:</label>
+            <input type="text" id="codigo-recurso" placeholder="Código da Corda">
+            <div class="form-botoes">
+                <button class="btn-acao" onclick="adicionarRecurso()">Adicionar</button>
+                <button class="btn-fechar" onclick="fecharFormularioAdicionar()">Fechar</button>
+            </div>
+        </div>
+
+        <!-- Formulário de Editar Recurso -->
+        <div class="formulario-editar" id="formulario-editar">
+            <label for="nome">Nome do Recurso:</label>
+            <input type="text" id="nome-recurso-editar" placeholder="Nome da Corda">
+            <label for="comprimento">Comprimento (m):</label>
+            <input type="number" id="comprimento-recurso-editar" placeholder="Comprimento">
+            <label for="codigo">Código:</label>
+            <input type="text" id="codigo-recurso-editar" placeholder="Código da Corda" disabled>
+            <div class="form-botoes">
+                <button class="btn-acao" onclick="salvarEdicao()">Salvar</button>
+                <button class="btn-fechar" onclick="fecharFormularioEditar()">Fechar</button>
+            </div>
+        </div>
+
+        <div class="corda-container" id="cordas-lista"></div>
+    </div>
+
+    <script>
+        var recursoEditando = null;
+
+        // Mostrar o formulário de adicionar recurso
+        function mostrarFormularioAdicionar() {
+            document.getElementById("formulario-adicionar").classList.add("active");
+            document.getElementById("formulario-editar").classList.remove("active");
+        }
+
+        // Fechar o formulário de adicionar
+        function fecharFormularioAdicionar() {
+            document.getElementById("formulario-adicionar").classList.remove("active");
+            limparCampos();
+        }
+
+        // Limpar os campos do formulário de adicionar
+        function limparCampos() {
+            document.getElementById("nome-recurso").value = '';
+            document.getElementById("comprimento-recurso").value = '';
+            document.getElementById("codigo-recurso").value = '';
+        }
+
+        // Função para adicionar um recurso
+        function adicionarRecurso() {
+            var nome = document.getElementById("nome-recurso").value;
+            var comprimento = document.getElementById("comprimento-recurso").value;
+            var codigo = document.getElementById("codigo-recurso").value;
+
+            if (!nome || !comprimento || !codigo) {
+                alert("Por favor, preencha todos os campos!");
+                return;
+            }
+
+            if (isNaN(comprimento) || comprimento <= 0) {
+                alert("Por favor, insira um comprimento válido!");
+                return;
+            }
+
+            var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+            var novoRecurso = { nome, comprimento, codigo, status: "livre" };
+
+            cordas.push(novoRecurso);
+            localStorage.setItem('cordas', JSON.stringify(cordas));
+
+            exibirRecursos();
+            mostrarSucesso("Recurso adicionado com sucesso!");
+            fecharFormularioAdicionar();
+        }
+
+        // Exibir os recursos
+        function exibirRecursos() {
+            var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+            var listaCordas = document.getElementById("cordas-lista");
+            listaCordas.innerHTML = '';
+
+            cordas.forEach(corda => {
+                var divCorda = document.createElement('div');
+                divCorda.classList.add('corda', corda.status);
+                divCorda.id = `corda${corda.codigo}`;
+
+                divCorda.innerHTML = `
+                    <h3>${corda.nome}</h3>
+                    <div class="detalhes">Comprimento: ${corda.comprimento} m</div>
+                    <div class="detalhes">Código: <span class="codigo">${corda.codigo}</span></div>
+                    <div class="status">
+                        <span class="status-icon">${corda.status === 'livre' ? '✔️' : '🔒'}</span>
+                        ${corda.status.charAt(0).toUpperCase() + corda.status.slice(1)}
+                    </div>
+                    <div class="form-botoes">
+                        <button class="btn-acao" onclick="alterarStatus('${corda.codigo}')">Alterar Status</button>
+                        <button class="btn-acao" onclick="removerRecurso('${corda.codigo}')">Remover</button>
+                        <button class="btn-acao" onclick="editarRecurso('${corda.codigo}')">Editar</button>
+                    </div>
+                `;
+
+                divCorda.classList.add('show');
+                listaCordas.appendChild(divCorda);
+            });
+        }
+
+        // Iniciar edição de um recurso
+        function editarRecurso(codigo) {
+            var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+            var corda = cordas.find(c => c.codigo === codigo);
+
+            if (corda) {
+                document.getElementById("nome-recurso-editar").value = corda.nome;
+                document.getElementById("comprimento-recurso-editar").value = corda.comprimento;
+                document.getElementById("codigo-recurso-editar").value = corda.codigo;
+
+                recursoEditando = corda;
+                document.getElementById("formulario-editar").classList.add("active");
+                document.getElementById("formulario-adicionar").classList.remove("active");
+            }
+        }
+
+        // Salvar a edição do recurso
+        function salvarEdicao() {
+            var nome = document.getElementById("nome-recurso-editar").value;
+            var comprimento = document.getElementById("comprimento-recurso-editar").value;
+
+            if (!nome || !comprimento) {
+                alert("Por favor, preencha todos os campos!");
+                return;
+            }
+
+            if (isNaN(comprimento) || comprimento <= 0) {
+                alert("Por favor, insira um comprimento válido!");
+                return;
+            }
+
+            // Atualizar a corda no armazenamento local
+            var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+            var cordaIndex = cordas.findIndex(c => c.codigo === recursoEditando.codigo);
+
+            if (cordaIndex !== -1) {
+                cordas[cordaIndex].nome = nome;
+                cordas[cordaIndex].comprimento = comprimento;
+
+                localStorage.setItem('cordas', JSON.stringify(cordas));
+                exibirRecursos();
+                mostrarSucesso("Recurso editado com sucesso!");
+                fecharFormularioEditar();
+            }
+        }
+
+        // Fechar o formulário de edição
+        function fecharFormularioEditar() {
+            document.getElementById("formulario-editar").classList.remove("active");
+            limparCamposEditar();
+        }
+
+        // Limpar os campos do formulário de edição
+        function limparCamposEditar() {
+            document.getElementById("nome-recurso-editar").value = '';
+            document.getElementById("comprimento-recurso-editar").value = '';
+        }
+
+        // Remover recurso
+        function removerRecurso(codigo) {
+            if (confirm("Tem certeza que deseja remover esta corda?")) {
+                var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+                var cordasAtualizadas = cordas.filter(c => c.codigo !== codigo);
+
+                localStorage.setItem('cordas', JSON.stringify(cordasAtualizadas));
+                exibirRecursos();
+            }
+        }
+
+        // Alterar status do recurso
+        function alterarStatus(codigo) {
+            var cordas = JSON.parse(localStorage.getItem('cordas')) || [];
+            var corda = cordas.find(c => c.codigo === codigo);
+
+            if (corda) {
+                corda.status = corda.status === 'livre' ? 'ocupado' : 'livre';
+                localStorage.setItem('cordas', JSON.stringify(cordas));
+                exibirRecursos();
+            }
+        }
+
+        function mostrarSucesso(mensagem) {
+            var sucesso = document.createElement('div');
+            sucesso.classList.add('sucesso');
+            sucesso.innerText = mensagem;
+            document.body.appendChild(sucesso);
+            setTimeout(() => sucesso.remove(), 3000);
+        }
+
+        // Filtrar recursos
+        function filtrarRecursos() {
+            var pesquisa = document.getElementById("pesquisa").value.toLowerCase();
+            var statusFiltro = document.getElementById("filtro-status").value;
+
+            var cordas = document.querySelectorAll('.corda');
+            cordas.forEach(function(corda) {
+                var nome = corda.querySelector('h3').innerText.toLowerCase();
+                var codigo = corda.querySelector('.codigo').innerText.toLowerCase();
+                var status = corda.classList.contains('livre') ? 'livre' : 'ocupado';
+
+                var visivel = (nome.includes(pesquisa) || codigo.includes(pesquisa)) &&
+                              (statusFiltro === '' || status === statusFiltro);
+
+                corda.style.display = visivel ? 'block' : 'none';
+            });
+        }
+
+        // Carregar os recursos ao iniciar
+        exibirRecursos();
+    </script>
+</body>
+</html>
