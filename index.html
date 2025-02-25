@@ -3,71 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizador de Equipamentos</title>
+    <title>Organizador de Equipamentos - Inovatec</title>
+    <!-- Fontes do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Organizador de Equipamentos - Inovatec</h1>
+        <div class="container">
+            <h1>Organizador de Equipamentos - Inovatec</h1>
+        </div>
     </header>
     
-    <section>
-        <form id="formEquipamento">
-            <h2>Cadastro de Equipamentos</h2>
-            
-            <label for="codigo">Código do Equipamento:</label>
-            <input type="text" id="codigo" name="codigo" required><br>
+    <main>
+        <section class="form-section">
+            <div class="container">
+                <h2>Cadastro de Equipamentos</h2>
+                <form id="formEquipamento">
+                    <div class="form-group">
+                        <label for="codigo">Código do Equipamento:</label>
+                        <input type="text" id="codigo" name="codigo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nome">Nome do Equipamento:</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="comprimento">Comprimento:</label>
+                        <input type="number" id="comprimento" name="comprimento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoria:</label>
+                        <select id="categoria" name="categoria">
+                            <option value="escalada">Escalada</option>
+                            <option value="alpinismo">Alpinismo</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status">
+                            <option value="em_uso">Em Uso</option>
+                            <option value="disponivel">Disponível</option>
+                            <option value="manutencao">Em Manutenção</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="historicoUso">Histórico de Uso:</label>
+                        <textarea id="historicoUso" name="historicoUso" placeholder="Descreva o uso anterior do equipamento"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="comentarios">Comentários:</label>
+                        <textarea id="comentarios" name="comentarios" placeholder="Adicione notas sobre o equipamento"></textarea>
+                    </div>
+                    <button type="submit">Salvar Equipamento</button>
+                </form>
+            </div>
+        </section>
 
-            <label for="nome">Nome do Equipamento:</label>
-            <input type="text" id="nome" name="nome" required><br>
-
-            <label for="comprimento">Comprimento:</label>
-            <input type="number" id="comprimento" name="comprimento" required><br>
-
-            <label for="categoria">Categoria:</label>
-            <select id="categoria" name="categoria">
-                <option value="escalada">Escalada</option>
-                <option value="alpinismo">Alpinismo</option>
-                <option value="outro">Outro</option>
-            </select><br>
-
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="em_uso">Em Uso</option>
-                <option value="disponivel">Disponível</option>
-                <option value="manutencao">Em Manutenção</option>
-            </select><br>
-
-            <label for="historicoUso">Histórico de Uso:</label>
-            <textarea id="historicoUso" name="historicoUso" placeholder="Descreva o uso anterior do equipamento"></textarea><br>
-
-            <label for="comentarios">Comentários:</label>
-            <textarea id="comentarios" name="comentarios" placeholder="Adicione notas sobre o equipamento"></textarea><br>
-
-            <button type="submit">Salvar Equipamento</button>
-        </form>
-    </section>
-
-    <!-- Tabela de Equipamentos -->
-    <section id="equipamentos">
-        <h2>Equipamentos Salvos</h2>
-        <input type="text" id="searchInput" placeholder="Pesquise por código ou nome..." oninput="filtrarEquipamentos()">
-        <table id="equipamentos-table">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Nome</th>
-                    <th>Categoria</th>
-                    <th>Status</th>
-                    <th>Comprimento</th> <!-- Adicionada coluna Comprimento -->
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="equipamentos-lista">
-                <!-- Equipamentos serão exibidos aqui -->
-            </tbody>
-        </table>
-    </section>
+        <section class="equipamentos-section">
+            <div class="container">
+                <h2>Equipamentos Salvos</h2>
+                <input type="text" id="searchInput" placeholder="Pesquise por código ou nome..." oninput="filtrarEquipamentos()">
+                <table id="equipamentos-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Status</th>
+                            <th>Comprimento</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipamentos-lista">
+                        <!-- Equipamentos serão exibidos aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
